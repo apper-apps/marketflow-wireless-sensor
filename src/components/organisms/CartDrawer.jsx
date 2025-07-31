@@ -1,15 +1,21 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
 import CartItem from "@/components/molecules/CartItem";
 
 const CartDrawer = ({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveItem }) => {
+  const navigate = useNavigate();
   const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   const tax = subtotal * 0.08; // 8% tax
   const shipping = subtotal > 50 ? 0 : 10; // Free shipping over $50
   const total = subtotal + tax + shipping;
 
+  const handleViewCart = () => {
+    onClose();
+    navigate('/cart');
+  };
   const backdropVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 }
@@ -112,6 +118,15 @@ const CartDrawer = ({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveItem
                     </div>
                   </div>
                 </div>
+<Button 
+                  className="w-full mb-3" 
+                  size="lg" 
+                  variant="outline"
+                  onClick={handleViewCart}
+                >
+                  <ApperIcon name="ShoppingCart" size={16} className="mr-2" />
+                  View Cart
+                </Button>
                 
                 <Button className="w-full" size="lg">
                   <ApperIcon name="CreditCard" size={16} className="mr-2" />
