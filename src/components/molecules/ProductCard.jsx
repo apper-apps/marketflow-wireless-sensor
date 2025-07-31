@@ -1,14 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
 import Badge from "@/components/atoms/Badge";
 import { motion } from "framer-motion";
 
 const ProductCard = ({ product, onAddToCart }) => {
+  const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+
   const handleAddToCart = () => {
     onAddToCart(product);
   };
 
+  const handleImageError = () => {
+    setImageError(true);
+    setImageLoading(false);
+  };
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
+    setImageError(false);
+  };
+
+  const getPlaceholderImage = () => {
+    // Generate a consistent placeholder based on product title
+    const colors = ['bg-blue-100', 'bg-green-100', 'bg-purple-100', 'bg-pink-100', 'bg-yellow-100'];
+    const colorIndex = product.title.length % colors.length;
+    return colors[colorIndex];
+  };
   const renderStars = (rating) => {
     return [...Array(5)].map((_, i) => (
       <ApperIcon
@@ -27,12 +46,29 @@ const ProductCard = ({ product, onAddToCart }) => {
       transition={{ duration: 0.3 }}
       className="bg-white rounded-xl shadow-sm overflow-hidden card-hover group"
     >
-      <div className="relative overflow-hidden">
-        <img
-          src={product.image}
-          alt={product.title}
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-        />
+<div className="relative overflow-hidden">
+        {imageLoading && (
+          <div className="w-full h-48 bg-gray-200 animate-pulse flex items-center justify-center">
+            <ApperIcon name="Image" size={24} className="text-gray-400" />
+          </div>
+        )}
+        
+        {imageError ? (
+          <div className={`w-full h-48 ${getPlaceholderImage()} flex flex-col items-center justify-center`}>
+            <ApperIcon name="Package" size={32} className="text-gray-500 mb-2" />
+            <span className="text-sm text-gray-600 font-medium">{product.title}</span>
+          </div>
+        ) : (
+          <img
+            src={product.image}
+            alt={product.title}
+            className={`w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
+            onError={handleImageError}
+            onLoad={handleImageLoad}
+            loading="lazy"
+          />
+        )}
+        
         {!product.inStock && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
             <Badge variant="danger" className="text-white bg-red-500">
