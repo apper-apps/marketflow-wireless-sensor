@@ -1,0 +1,37 @@
+[
+  {
+    "id": "electronics",
+    "name": "Electronics",
+    "icon": "Smartphone",
+    "productCount": 8,
+    "description": "Latest gadgets and electronic devices"
+  },
+  {
+    "id": "clothing",
+    "name": "Clothing",
+    "icon": "Shirt",
+    "productCount": 8,
+    "description": "Fashion and apparel for all occasions"
+  },
+  {
+    "id": "home-garden",
+    "name": "Home & Garden",
+    "icon": "Home",
+    "productCount": 8,
+    "description": "Everything for your home and garden"
+  },
+  {
+    "id": "books",
+    "name": "Books",
+    "icon": "Book",
+    "productCount": 8,
+    "description": "Knowledge and entertainment in written form"
+  },
+  {
+    "id": "sports",
+    "name": "Sports",
+    "icon": "Dumbbell",
+    "productCount": 8,
+    "description": "Sports equipment and fitness gear"
+  }
+]
