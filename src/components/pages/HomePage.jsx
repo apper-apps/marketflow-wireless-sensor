@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Header from "@/components/organisms/Header";
 import ProductGrid from "@/components/organisms/ProductGrid";
-import CategoryFilter from "@/components/molecules/CategoryFilter";
+import FilterSidebar from "@/components/molecules/CategoryFilter";
 import CartDrawer from "@/components/organisms/CartDrawer";
 import Footer from "@/components/organisms/Footer";
 import categoryService from "@/services/api/categoryService";
+import productService from "@/services/api/productService";
 import { toast } from "react-toastify";
 
 const HomePage = () => {
@@ -13,7 +14,14 @@ const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-
+  
+  // Filter states
+  const [priceRange, setPriceRange] = useState({ min: 0, max: 3000 });
+  const [selectedBrands, setSelectedBrands] = useState([]);
+  const [minRating, setMinRating] = useState(0);
+  const [showInStock, setShowInStock] = useState(false);
+  const [showOnSale, setShowOnSale] = useState(false);
+  const [availableBrands, setAvailableBrands] = useState([]);
   // Load categories
   useEffect(() => {
     const loadCategories = async () => {
@@ -40,7 +48,7 @@ const HomePage = () => {
     localStorage.setItem("marketflow-cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const handleAddToCart = (product) => {
+const handleAddToCart = (product) => {
     setCartItems(prev => {
       const existingItem = prev.find(item => item.productId === product.Id);
       
@@ -92,8 +100,44 @@ const HomePage = () => {
     setSearchQuery(""); // Clear search when changing category
   };
 
-  const totalCartItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  // Filter handlers
+  const handlePriceRangeChange = (newRange) => {
+    setPriceRange(newRange);
+    toast.success("Price filter updated");
+  };
 
+  const handleBrandChange = (brands) => {
+    setSelectedBrands(brands);
+    toast.success(`${brands.length} brand${brands.length !== 1 ? 's' : ''} selected`);
+  };
+
+  const handleRatingChange = (rating) => {
+    setMinRating(rating);
+    toast.success(`Minimum rating set to ${rating}+ stars`);
+  };
+
+  const handleAvailabilityChange = (type, checked) => {
+    if (type === 'inStock') {
+      setShowInStock(checked);
+      toast.success(checked ? "Showing in-stock items only" : "Showing all availability");
+    } else if (type === 'onSale') {
+      setShowOnSale(checked);
+      toast.success(checked ? "Showing sale items only" : "Showing all items");
+    }
+  };
+
+  const handleClearAllFilters = () => {
+    setActiveCategory("all");
+    setSearchQuery("");
+    setPriceRange({ min: 0, max: 3000 });
+    setSelectedBrands([]);
+    setMinRating(0);
+    setShowInStock(false);
+    setShowOnSale(false);
+    toast.info("All filters cleared");
+  };
+
+  const totalCartItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   return (
     <div className="min-h-screen bg-background">
       <Header
@@ -105,11 +149,22 @@ const HomePage = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
           {/* Category Sidebar - Desktop */}
-          <div className="hidden lg:block w-64 flex-shrink-0">
-            <CategoryFilter
+<div className="hidden lg:block w-64 flex-shrink-0">
+            <FilterSidebar
               categories={categories}
               activeCategory={activeCategory}
               onCategoryChange={handleCategoryChange}
+              priceRange={priceRange}
+              onPriceRangeChange={handlePriceRangeChange}
+              selectedBrands={selectedBrands}
+              onBrandChange={handleBrandChange}
+              minRating={minRating}
+              onRatingChange={handleRatingChange}
+              showInStock={showInStock}
+              showOnSale={showOnSale}
+              onAvailabilityChange={handleAvailabilityChange}
+              onClearAll={handleClearAllFilters}
+              availableBrands={availableBrands}
             />
           </div>
 
@@ -152,9 +207,14 @@ const HomePage = () => {
               </div>
             )}
             
-            <ProductGrid
+<ProductGrid
               searchQuery={searchQuery}
               activeCategory={activeCategory}
+              priceRange={priceRange}
+              selectedBrands={selectedBrands}
+              minRating={minRating}
+              showInStock={showInStock}
+              showOnSale={showOnSale}
               onAddToCart={handleAddToCart}
             />
           </div>

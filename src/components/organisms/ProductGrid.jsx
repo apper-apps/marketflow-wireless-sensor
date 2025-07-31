@@ -6,7 +6,16 @@ import Empty from "@/components/ui/Empty";
 import productService from "@/services/api/productService";
 import { toast } from "react-toastify";
 
-const ProductGrid = ({ searchQuery, activeCategory, onAddToCart }) => {
+const ProductGrid = ({ 
+  searchQuery, 
+  activeCategory, 
+  priceRange = { min: 0, max: 3000 },
+  selectedBrands = [],
+  minRating = 0,
+  showInStock = false,
+  showOnSale = false,
+  onAddToCart 
+}) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -35,13 +44,32 @@ const ProductGrid = ({ searchQuery, activeCategory, onAddToCart }) => {
     toast.success(`${product.title} added to cart!`);
   };
 
-  const filteredProducts = products.filter(product => {
+const filteredProducts = products.filter(product => {
+    // Search filter
     const matchesSearch = !searchQuery || 
       product.title.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Category filter
     const matchesCategory = activeCategory === "all" || 
       product.category === activeCategory;
     
-    return matchesSearch && matchesCategory;
+    // Price filter
+    const matchesPrice = product.price >= priceRange.min && product.price <= priceRange.max;
+    
+    // Brand filter (extract brand from title - first word or two)
+    const productBrand = product.title.split(' ').slice(0, 2).join(' ');
+    const matchesBrand = selectedBrands.length === 0 || 
+      selectedBrands.some(brand => productBrand.toLowerCase().includes(brand.toLowerCase()));
+    
+    // Rating filter
+    const matchesRating = minRating === 0 || product.rating >= minRating;
+    
+    // Availability filters
+    const matchesInStock = !showInStock || product.inStock;
+    const matchesOnSale = !showOnSale || product.price < 100; // Simple sale logic
+    
+    return matchesSearch && matchesCategory && matchesPrice && 
+           matchesBrand && matchesRating && matchesInStock && matchesOnSale;
   });
 
   if (loading) {
