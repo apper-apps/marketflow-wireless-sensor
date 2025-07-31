@@ -7,13 +7,59 @@ const productService = {
     return [...mockProducts];
   },
 
-  async getById(id) {
+async getById(id) {
     await new Promise(resolve => setTimeout(resolve, 200));
     const product = mockProducts.find(p => p.Id === parseInt(id));
     if (!product) {
       throw new Error("Product not found");
     }
-    return { ...product };
+    
+    // Return enhanced product data for detail page
+    return { 
+      ...product,
+      detailedDescription: product.description + " This premium product offers exceptional quality and performance, carefully crafted to meet the highest standards. Perfect for both everyday use and special occasions.",
+      specifications: this.getSpecifications(product.category),
+      shippingInfo: {
+        freeShipping: product.price > 50,
+        estimatedDays: product.inStock ? "2-3 business days" : "Currently unavailable"
+      }
+    };
+  },
+
+  getSpecifications(category) {
+    const specs = {
+      electronics: {
+        warranty: "2 years manufacturer warranty",
+        support: "24/7 technical support",
+        compatibility: "Universal compatibility"
+      },
+      clothing: {
+        material: "Premium quality fabric",
+        care: "Machine washable",
+        fit: "True to size"
+      },
+      "home-garden": {
+        material: "Durable construction",
+        maintenance: "Low maintenance required",
+        installation: "Easy setup included"
+      },
+      books: {
+        pages: "Comprehensive content",
+        format: "Print and digital available",
+        language: "English"
+      },
+      sports: {
+        quality: "Professional grade",
+        usage: "All skill levels",
+        durability: "Built to last"
+      }
+    };
+    
+    return specs[category] || {
+      quality: "Premium quality",
+      support: "Customer support available",
+      satisfaction: "100% satisfaction guarantee"
+    };
   },
 
   async getByCategory(categoryId) {
