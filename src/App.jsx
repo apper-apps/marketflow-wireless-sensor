@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import HomePage from "@/components/pages/HomePage";
 import ProductDetailPage from "@/components/pages/ProductDetailPage";
 import CartPage from "@/components/pages/CartPage";
+import AccountDashboard from "@/components/pages/AccountDashboard";
 function App() {
   return (
 <BrowserRouter>
@@ -12,6 +13,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/account/*" element={<AccountDashboard />} />
         </Routes>
         <ToastContainer
           position="top-right"

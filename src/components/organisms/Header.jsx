@@ -1,9 +1,10 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
-import { motion } from "framer-motion";
-
 const Header = ({ onSearch, cartItemCount, onCartToggle }) => {
+  const navigate = useNavigate();
   return (
     <header className="bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -50,8 +51,12 @@ const Header = ({ onSearch, cartItemCount, onCartToggle }) => {
             </button>
 
             {/* User Menu */}
-            <button className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
+<button 
+              onClick={() => navigate('/account')}
+              className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-100"
+            >
               <ApperIcon name="User" size={20} />
+              <span className="hidden sm:inline text-sm font-medium">My Account</span>
             </button>
           </div>
         </div>
