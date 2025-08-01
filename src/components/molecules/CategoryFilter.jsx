@@ -205,10 +205,10 @@ const FilterSidebar = ({
                   />
                 ))}
                 <span className="text-sm text-gray-600 ml-2">{rating}+ Stars</span>
-              </div>
+</div>
             </label>
           ))}
-<label key="all-ratings" className="flex items-center space-x-2 cursor-pointer">
+          <label key="all-ratings" className="flex items-center space-x-2 cursor-pointer">
             <input
               type="radio"
               name="rating"
