@@ -77,8 +77,8 @@ const FilterSidebar = ({
       </div>
 
       {/* Categories */}
-      <SectionHeader title="Categories" icon="Grid3X3" section="categories">
-<button
+<SectionHeader title="Categories" icon="Grid3X3" section="categories">
+        <button
           key="all"
           onClick={() => onCategoryChange("all")}
           className={cn(
