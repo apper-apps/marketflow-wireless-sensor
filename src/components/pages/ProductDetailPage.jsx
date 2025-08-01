@@ -34,8 +34,9 @@ const ProductDetailPage = () => {
       setProduct(productData);
 
       // Load category data for breadcrumb
-      const categories = await categoryService.getAll();
-      const productCategory = categories.find(cat => cat.id === productData.category);
+const categories = await categoryService.getAll();
+      const categoryId = productData.category?.Id || productData.category;
+      const productCategory = categories.find(cat => cat.Id === parseInt(categoryId));
       setCategory(productCategory);
     } catch (err) {
       setError(err.message || "Failed to load product details");
@@ -96,9 +97,9 @@ const ProductDetailPage = () => {
     ];
   };
 
-  const getCategoryName = () => {
-    if (!category) return product?.category || "";
-    return category.name || category.id;
+const getCategoryName = () => {
+    if (!category) return product?.category?.Name || product?.category || "";
+    return category.Name || category.name || category.Id;
   };
 
   const getKeyFeatures = () => {
@@ -141,7 +142,7 @@ const ProductDetailPage = () => {
       ]
     };
 
-    return features[product?.category] || [
+return features[product?.category?.Name || product?.category] || [
       "High quality materials",
       "Excellent craftsmanship",
       "Great value for money",

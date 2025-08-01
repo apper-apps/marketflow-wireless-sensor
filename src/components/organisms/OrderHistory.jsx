@@ -9,7 +9,7 @@ import Badge from '@/components/atoms/Badge';
 import Loading from '@/components/ui/Loading';
 import Error from '@/components/ui/Error';
 import Empty from '@/components/ui/Empty';
-import orderService from '@/services/api/orderService';
+import { orderService } from '@/services/api/orderService';
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -53,8 +53,8 @@ const OrderHistory = () => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(order => 
-        order.orderNumber.toLowerCase().includes(query) ||
-        order.items.some(item => item.name.toLowerCase().includes(query))
+order.orderNumber.toLowerCase().includes(query) ||
+        (order.items && order.items.some && order.items.some(item => item.name.toLowerCase().includes(query)))
       );
     }
 
@@ -319,12 +319,12 @@ const OrderHistory = () => {
                         <div className="mb-6">
                           <h4 className="font-medium mb-3">Shipping Address</h4>
                           <div className="text-sm text-gray-600">
-                            <p>{order.shippingAddress.name}</p>
-                            <p>{order.shippingAddress.street}</p>
+<p>{order.shippingAddress?.name || 'N/A'}</p>
+                            <p>{order.shippingAddress?.street || 'N/A'}</p>
                             <p>
-                              {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}
+                              {order.shippingAddress?.city || 'N/A'}, {order.shippingAddress?.state || 'N/A'} {order.shippingAddress?.zipCode || 'N/A'}
                             </p>
-                            <p>{order.shippingAddress.country}</p>
+                            <p>{order.shippingAddress?.country || 'N/A'}</p>
                           </div>
                         </div>
 

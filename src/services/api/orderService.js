@@ -1,93 +1,153 @@
-import mockOrders from '@/services/mockData/orders.json';
 import { toast } from 'react-toastify';
 
-// Internal data store (copy of mock data)
-let orders = [...mockOrders];
-let nextId = Math.max(...orders.map(o => o.Id)) + 1;
+const orderService = {
+  async getAll() {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
 
-export const orderService = {
-  // Get all orders
-  getAll() {
-    return Promise.resolve([...orders]);
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "orderNumber" } },
+          { field: { Name: "date" } },
+          { field: { Name: "status" } },
+          { field: { Name: "total" } },
+          { field: { Name: "shippingAddress" } },
+          { field: { Name: "trackingNumber" } },
+          { field: { Name: "items" } }
+        ],
+        orderBy: [
+          {
+            fieldName: "date",
+            sorttype: "DESC"
+          }
+        ]
+      };
+
+      const response = await apperClient.fetchRecords('order', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching orders:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   },
 
-  // Get order by ID
-  getById(id) {
-    const numericId = parseInt(id);
-    if (isNaN(numericId)) {
-      return Promise.reject(new Error('Invalid order ID'));
+  async getById(id) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "orderNumber" } },
+          { field: { Name: "date" } },
+          { field: { Name: "status" } },
+          { field: { Name: "total" } },
+          { field: { Name: "shippingAddress" } },
+          { field: { Name: "trackingNumber" } },
+          { field: { Name: "items" } }
+        ]
+      };
+
+      const response = await apperClient.getRecordById('order', parseInt(id), params);
+      
+      if (!response || !response.data) {
+        return null;
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching order with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
     }
-    
-    const order = orders.find(o => o.Id === numericId);
-    if (!order) {
-      return Promise.reject(new Error('Order not found'));
-    }
-    
-    return Promise.resolve({ ...order });
   },
 
-  // Get orders by status
-  getByStatus(status) {
-    const filteredOrders = orders.filter(o => 
-      status === 'all' || o.status === status
-    );
-    return Promise.resolve([...filteredOrders]);
+  async updateStatus(id, newStatus) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        records: [
+          {
+            Id: parseInt(id),
+            status: newStatus
+          }
+        ]
+      };
+
+      const response = await apperClient.updateRecord('order', params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+        
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update order ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+          
+          failedUpdates.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+
+        if (successfulUpdates.length > 0) {
+          toast.success(`Order status updated to ${newStatus}`);
+          return successfulUpdates[0].data;
+        }
+      }
+
+      return null;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating order status:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
+    }
   },
 
-  // Search orders
-  search(query) {
-    const searchTerm = query.toLowerCase();
-    const filteredOrders = orders.filter(o => 
-      o.orderNumber.toLowerCase().includes(searchTerm) ||
-      o.items.some(item => item.name.toLowerCase().includes(searchTerm))
-    );
-    return Promise.resolve([...filteredOrders]);
-  },
-
-  // Update order status
-  updateStatus(id, newStatus) {
-    const numericId = parseInt(id);
-    if (isNaN(numericId)) {
-      return Promise.reject(new Error('Invalid order ID'));
-    }
-
-    const orderIndex = orders.findIndex(o => o.Id === numericId);
-    if (orderIndex === -1) {
-      return Promise.reject(new Error('Order not found'));
-    }
-
-    const validStatuses = ['processing', 'shipped', 'delivered', 'cancelled'];
-    if (!validStatuses.includes(newStatus)) {
-      return Promise.reject(new Error('Invalid status'));
-    }
-
-    orders[orderIndex] = {
-      ...orders[orderIndex],
-      status: newStatus
-    };
-
-    toast.success(`Order ${orders[orderIndex].orderNumber} status updated to ${newStatus}`);
-    return Promise.resolve({ ...orders[orderIndex] });
-  },
-
-  // Cancel order
-  cancel(id) {
+  async cancel(id) {
     return this.updateStatus(id, 'cancelled');
-  },
-
-  // Get order statistics
-  getStats() {
-    const stats = {
-      total: orders.length,
-      processing: orders.filter(o => o.status === 'processing').length,
-      shipped: orders.filter(o => o.status === 'shipped').length,
-      delivered: orders.filter(o => o.status === 'delivered').length,
-      cancelled: orders.filter(o => o.status === 'cancelled').length,
-      totalValue: orders.reduce((sum, o) => sum + o.total, 0)
-    };
-    
-    return Promise.resolve(stats);
   }
 };
+
+export { orderService };
+export default orderService;
 
 export default orderService;
