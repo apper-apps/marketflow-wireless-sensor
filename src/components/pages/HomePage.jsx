@@ -182,9 +182,9 @@ const handleAddToCart = (product) => {
               >
                 All Products
               </button>
-              {categories.map((category) => (
+{categories.map((category, index) => (
                 <button
-                  key={`category-${category.id}`}
+                  key={`category-${category.id || `undefined-${index}`}`}
                   onClick={() => handleCategoryChange(category.id)}
                   className={`flex-shrink-0 px-4 py-2 rounded-full font-medium transition-all duration-200 ${
                     activeCategory === category.id
