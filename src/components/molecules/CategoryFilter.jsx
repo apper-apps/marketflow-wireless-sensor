@@ -188,7 +188,7 @@ const FilterSidebar = ({
         <div className="space-y-2">
           {[5, 4, 3, 2, 1].map((rating) => (
             <label key={rating} className="flex items-center space-x-2 cursor-pointer">
-              <input
+<input
                 type="radio"
                 name="rating"
                 checked={minRating === rating}
@@ -198,7 +198,7 @@ const FilterSidebar = ({
               <div className="flex items-center space-x-1">
                 {[...Array(5)].map((_, i) => (
                   <ApperIcon
-                    key={i}
+                    key={`star-${rating}-${i}`}
                     name="Star"
                     size={14}
                     className={i < rating ? "text-yellow-400 fill-current" : "text-gray-300"}
