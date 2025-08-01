@@ -171,7 +171,8 @@ const handleAddToCart = (product) => {
           {/* Mobile Category Filter */}
           <div className="lg:hidden mb-6">
             <div className="flex overflow-x-auto space-x-3 pb-4">
-              <button
+<button
+                key="all"
                 onClick={() => handleCategoryChange("all")}
                 className={`flex-shrink-0 px-4 py-2 rounded-full font-medium transition-all duration-200 ${
                   activeCategory === "all"
