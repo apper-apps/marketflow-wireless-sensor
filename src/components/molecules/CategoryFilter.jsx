@@ -208,7 +208,7 @@ const FilterSidebar = ({
               </div>
             </label>
           ))}
-          <label className="flex items-center space-x-2 cursor-pointer">
+<label key="all-ratings" className="flex items-center space-x-2 cursor-pointer">
             <input
               type="radio"
               name="rating"
