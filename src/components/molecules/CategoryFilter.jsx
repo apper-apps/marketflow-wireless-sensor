@@ -78,7 +78,8 @@ const FilterSidebar = ({
 
       {/* Categories */}
       <SectionHeader title="Categories" icon="Grid3X3" section="categories">
-        <button
+<button
+          key="all"
           onClick={() => onCategoryChange("all")}
           className={cn(
             "w-full flex items-center justify-between px-3 py-2 rounded-lg text-left transition-all duration-200",
