@@ -149,5 +149,3 @@ const orderService = {
 
 export { orderService };
 export default orderService;
-
-export default orderService;
